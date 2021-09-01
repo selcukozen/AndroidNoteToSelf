@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/selcu/Documents/GitHub/AndroidNoteToSelf/app/src/main/res/layout/activity_main.xml" value="0.371875" />
+        <entry key="..\:/Users/selcu/Documents/GitHub/AndroidNoteToSelf/app/src/main/res/layout/content_main.xml" value="0.371875" />
         <entry key="..\:/Users/selcu/Documents/GitHub/AndroidNoteToSelf/app/src/main/res/layout/dialog_new_note.xml" value="0.371875" />
         <entry key="..\:/Users/selcu/Documents/GitHub/AndroidNoteToSelf/app/src/main/res/layout/dialog_show_note.xml" value="0.371875" />
       </map>

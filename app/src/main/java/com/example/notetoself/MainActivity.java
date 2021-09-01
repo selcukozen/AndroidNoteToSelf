@@ -17,8 +17,11 @@ import com.example.notetoself.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+
+	Note mTempNote = new Note();
 
 	private AppBarConfiguration appBarConfiguration;
 	private ActivityMainBinding binding;
@@ -32,17 +35,36 @@ public class MainActivity extends AppCompatActivity {
 
 		setSupportActionBar(binding.toolbar);
 
-		NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-		appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-		NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+		Button button = findViewById(R.id.button);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Create a new DialogShowNote called dialog
+				DialogShowNote dialog = new DialogShowNote();
+
+				// Send the note via the sendNoteSelected method
+				dialog.sendNoteSelected(mTempNote);
+
+				// Create the dialog
+				dialog.show(getSupportFragmentManager(), "123");
+			}
+		});
+
+	//	NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+	//	appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+	//	NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
 		binding.fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-								.setAction("Action", null).show();
+				DialogNewNote dialog = new DialogNewNote();
+				dialog.show(getSupportFragmentManager(), "");
 			}
 		});
+	}
+
+	public void CreateNewNote(Note n){
+		mTempNote = n;
 	}
 
 	@Override
@@ -69,8 +91,12 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onSupportNavigateUp() {
+		/*
 		NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
 		return NavigationUI.navigateUp(navController, appBarConfiguration)
 						|| super.onSupportNavigateUp();
+
+		 */
+		return true;
 	}
 }
