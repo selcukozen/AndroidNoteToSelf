@@ -48,6 +48,7 @@ public class DialogNewNote extends DialogFragment {
 				newNote.setDescription(editDescription.getText().toString());
 				newNote.setIdea(checkBoxIdea.isChecked());
 				newNote.setImportant(checkBoxImportant.isChecked());
+				newNote.setTodo(checkBoxTodo.isChecked());
 
 				MainActivity callingActivity = (MainActivity) getActivity();
 

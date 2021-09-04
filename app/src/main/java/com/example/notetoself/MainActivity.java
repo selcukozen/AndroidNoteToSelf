@@ -1,17 +1,24 @@
 package com.example.notetoself;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.notetoself.databinding.ActivityMainBinding;
 
@@ -19,12 +26,41 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
-	Note mTempNote = new Note();
+//	Note mTempNote = new Note();
+//	private List<Note> noteList = new ArrayList<Note>();
+	private JSONSerializer mSerializer;
+	private List<Note> noteList;
+	private RecyclerView recyclerView;
+	private NoteAdapter mAdapter;
 
 	private AppBarConfiguration appBarConfiguration;
 	private ActivityMainBinding binding;
+
+	private boolean mShowDividers;
+	private SharedPreferences mPrefs;
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		mPrefs = getSharedPreferences("Note to self", MODE_PRIVATE);
+
+		mShowDividers = mPrefs.getBoolean("dividers", true);
+
+		if (mShowDividers) {
+			recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+		}
+		else {
+			if (recyclerView.getItemDecorationCount() > 0) {
+				recyclerView.removeItemDecorationAt(0);
+			}
+		}
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
 		setSupportActionBar(binding.toolbar);
 
-		Button button = findViewById(R.id.button);
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// Create a new DialogShowNote called dialog
-				DialogShowNote dialog = new DialogShowNote();
-
-				// Send the note via the sendNoteSelected method
-				dialog.sendNoteSelected(mTempNote);
-
-				// Create the dialog
-				dialog.show(getSupportFragmentManager(), "123");
-			}
-		});
 
 	//	NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
 	//	appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
@@ -61,12 +83,50 @@ public class MainActivity extends AppCompatActivity {
 				dialog.show(getSupportFragmentManager(), "");
 			}
 		});
+
+		mSerializer = new JSONSerializer("NoteToSelf.json", getApplicationContext());
+
+		try {
+			noteList = mSerializer.load();
+		} catch (Exception e) {
+			noteList = new ArrayList<Note> ();
+			Log.e("Error loading notes:", "", e);
+		}
+
+		recyclerView = findViewById(R.id.recyclerView);
+		mAdapter = new NoteAdapter(this, noteList);
+		RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+		recyclerView.setLayoutManager(mLayoutManager);
+		recyclerView.setItemAnimator(new DefaultItemAnimator());
+		recyclerView.setAdapter(mAdapter);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		saveNotes();
+	}
+
+	public void saveNotes() {
+		try {
+			mSerializer.save(noteList);
+		} catch (Exception e) {
+			Log.e("Error Saving Notes", "", e);
+		}
 	}
 
 	public void CreateNewNote(Note n){
-		mTempNote = n;
+		noteList.add(n);
+		mAdapter.notifyDataSetChanged();
 	}
 
+	public void showNote(int noteToShow){
+		DialogShowNote dialog = new DialogShowNote();
+
+		dialog.sendNoteSelected((noteList.get(noteToShow)));
+		dialog.show(getSupportFragmentManager(), "");
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -83,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
 
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
+
 			return true;
 		}
 

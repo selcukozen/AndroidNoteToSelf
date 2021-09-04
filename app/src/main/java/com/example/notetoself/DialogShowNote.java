@@ -24,7 +24,7 @@ public class DialogShowNote extends DialogFragment {
 		View dialogView = inflater.inflate(R.layout.dialog_show_note, null);
 
 		TextView txtTitle = dialogView.findViewById(R.id.txtTitle);
-		txtTitle.setText(mNote.getmTitle());
+		txtTitle.setText(mNote.getTitle());
 		TextView txtDescription = dialogView.findViewById(R.id.txtDescription);
 		txtDescription.setText(mNote.getDescription());
 
